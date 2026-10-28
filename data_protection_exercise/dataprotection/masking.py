@@ -10,14 +10,13 @@ def mask(people):
     """
     df = pd.DataFrame(people)
 
-    parts = df["email"].str.split("@", n=1, expand=True)
+    parts = df["email"].str.split("@", expand=True)
     local_part = parts[0]
     domain_part = parts[1]
 
-    masked_local = local_part.replace(r"^[^@]+(?=@)", "*****", regex=True)
-    
+    masked_local = local_part.str.replace(r".", "*", regex=True) 
     df["email"] = masked_local + "@" + domain_part
     
-    df["phone"] = df["phone"].map(lambda phone: "*" * (len(phone) -2) + phone[-2:])
+    df["phone"] = df["phone"].str.replace(r".(?=.{2})", "*", regex=True)
 
     return df.to_dict(orient="records")
